@@ -1,0 +1,13 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "flowVariables": {
+            "sub-mobtel": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "sub-mobtel"
+            }
+        }
+    },
+    "id": "e0c285ff-e801-4731-9cce-5c9e670273c4",
+    "version": "5.2.0.0"
+}

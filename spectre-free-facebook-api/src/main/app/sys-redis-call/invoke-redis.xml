@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:redis="http://www.mulesoft.org/schema/mule/redis"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/redis http://www.mulesoft.org/schema/mule/redis/current/mule-redis.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+    <sub-flow name="spectre-free-facebook-api:\get-prefix-from-cache:subflow">
+    	<logger message="#[flowVars.id]: Log Start Get Prefix from Cache" level="INFO" doc:name="Log Start Get Prefix from Cache"/>
+        <redis:get config-ref="Redis__Configuration" key="#[flowVars.'sub-mobtel-prefix']" doc:name="REDIS Get Prefix from Cache"/>
+        <logger message="#[flowVars.id]: Log End Get Prefix from Cache. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Get Prefix from Cache"/>
+    </sub-flow>
+    <sub-flow name="spectre-free-facebook-api:\set-prefix-to-cache:subflow">
+        <logger message="#[flowVars.id]: Log Start Set Prefix to Cache" level="INFO" doc:name="Log Start Set Prefix to Cache"/>
+        <redis:set config-ref="Redis__Configuration" key="#[flowVars.'sub-mobtel-prefix']" value="#[flowVars.'brand-id']" doc:name="Redis Set Prefix to Cache"/>
+        <logger message="#[flowVars.id]: Log End Set Prefix to Cache. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Set Prefix to Cache"/>
+    </sub-flow>
+    <sub-flow name="spectre-free-facebook-api:\check-msisdn-and-state-in-cache:subflow">
+        <logger message="#[flowVars.id]: Log Start Check MSISDN and State in Cache" level="INFO" doc:name="Log Start Check MSISDN and State in Cache"/>
+        <redis:exists config-ref="Redis__Configuration" key="#[flowVars.'sub-mobtel']" doc:name="Redis Check MSISDN and State in Cache"/>
+        <logger message="#[flowVars.id]: Log End Check MSISDN and State in Cache. MSISDN is in the Cache = #[payload]" level="INFO" doc:name="Log End Check MSISDN and State in Cache"/>
+    </sub-flow>
+    <sub-flow name="spectre-free-facebook-api:\get-old-state-in-cache:subflow">
+        <logger message="#[flowVars.id]: Log Start Get Old State in Cache" level="INFO" doc:name="Log Start Get Old State in Cache"/>
+        <redis:get config-ref="Redis__Configuration" key="#[flowVars.'sub-mobtel']" doc:name="Redis Get Old State in Cache"/>
+        <logger message="#[flowVars.id]: Log End Get Old State in Cache. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Get Old State in Cache"/>
+    </sub-flow>
+    
+</mule>

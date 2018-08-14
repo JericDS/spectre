@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+
+    <sub-flow name="spectre-free-facebook-api:\get-brandid-via-cache-or-bridge:subflow">
+        <logger message="#[flowVars.id]: Log Start Get Brand ID" level="INFO" doc:name="Log Start Get Brand ID"/>
+    	<flow-ref name="spectre-free-facebook-api:\get-prefix-from-cache:subflow" doc:name="spectre-free-facebook-api:\get-prefix-from-cache:subflow"/>
+        <choice doc:name="Prefix Route" doc:description="Route 1: Set Brand-id with payload
+Default: Call Bridge API">
+            <when expression="#[payload != null]">
+                <set-variable variableName="brand-id" value="#[message.payloadAs(java.lang.String)]" doc:name="Set Brand ID FlowVar"/>
+            </when>
+            <otherwise>
+            	 <flow-ref name="spectre-free-facebook-api:\invoke-bridge-api:subflow" doc:name="spectre-free-facebook-api:\invoke-bridge-api:subflow"/>
+		        <dw:transform-message doc:name="Set Brand ID FlowVar" >
+		            <dw:input-payload doc:sample="schema/BridgeResponse.json" mimeType="application/json"/>
+                    <dw:set-variable resource="classpath:scripts/GetBrandID.dwl" variableName="brand-id"/>
+		        </dw:transform-message>
+                <choice doc:name="Brand-id Route" doc:description="Route 1: Store prefix to cache
+Default: Error. Call SMS Api. Set Response">
+                    <when expression="#[flowVars.'brand-id' != 0]">
+                        <flow-ref name="spectre-free-facebook-api:\set-prefix-to-cache:subflow" doc:name="spectre-free-facebook-api:\set-prefix-to-cache:subflow"/>
+                    </when>
+                    <otherwise>
+                        <logger level="INFO" doc:name="TODO: Error Logs. Call SMS API. Set Response" message="Error Logs. Call SMS API. Set Response"/>
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+        <logger message="#[flowVars.id]: Log Start Get Brand ID. #[flowVars.'brand-id']" level="INFO" doc:name="Log Start Get Brand ID"/>
+    </sub-flow>
+
+</mule>

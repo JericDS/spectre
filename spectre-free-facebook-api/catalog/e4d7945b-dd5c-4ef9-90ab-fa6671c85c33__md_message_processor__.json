@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "BridgeResponse"
+        }
+    },
+    "outputMessageMetadata": {},
+    "id": "e4d7945b-dd5c-4ef9-90ab-fa6671c85c33",
+    "version": "5.2.0.0"
+}

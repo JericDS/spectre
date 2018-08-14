@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <sub-flow name="spectre-free-facebook-api:\impl-spectre-provisioning:subflow">
+        <byte-array-to-string-transformer returnClass="java.lang.String" doc:name="Payload Byte Array to Payload String"/>
+        <dw:transform-message doc:name="FlowVars:sub-mobtel-prefix, sub-mobtel, sms-message-string" metadata:id="641ada1b-7a6c-40b8-a0bc-bf767e48094c">
+            <dw:input-payload doc:sample="sample_data/json.json"/>
+            <dw:set-variable variableName="sub-mobtel-prefix"><![CDATA[%dw 1.0
+%output application/java
+---
+
+(
+	payload.sub_mobtel[0 to 4]
+	when (sizeOf payload.sub_mobtel) == 10
+	otherwise payload.sub_mobtel[2 to 6]
+)]]></dw:set-variable>
+            <dw:set-variable variableName="sms-message-string"><![CDATA[%dw 1.0
+%output application/java
+---
+payload.sms_message_string]]></dw:set-variable>
+            <dw:set-variable variableName="sub-mobtel"><![CDATA[%dw 1.0
+%output application/java
+---
+(
+	payload.sub_mobtel
+)]]></dw:set-variable>
+        </dw:transform-message>
+        <flow-ref name="spectre-free-facebook-api:\invoke-audit-api:subflow" doc:name="spectre-free-facebook-api:\invoke-audit-api:subflow"/>
+        <flow-ref name="spectre-free-facebook-api:\get-brandid-via-cache-or-bridge:subflow" doc:name="spectre-free-facebook-api:\get-brandid-via-cache-or-bridge:subflow"/>
+        <flow-ref name="spectre-free-facebook-api:\check-eligibility:subflow" doc:name="spectre-free-facebook-api:\check-eligibility:subflow"/>
+        <flow-ref name="spectre-free-facebook-api:\generate-hmac:subflow" doc:name="spectre-free-facebook-api:\generate-hmac:subflow"/>
+        <set-payload value="{
+&quot;msisdn&quot;: &quot;+#[flowVars.'sub-mobtel']&quot;, 
+&quot;timestamp&quot;: #[flowVars.timestamp],
+&quot;provision&quot;: 
+   {&quot;fb_product_id&quot;: &quot;free&quot;, &quot;expiration&quot;: 1534315546}
+}" doc:name="Set Facebook Request Payload"/>
+        <flow-ref name="spectre-free-facebook-api:\invoke-fb-api:subflow" doc:name="spectre-free-facebook-api:\invoke-fb-api:subflow"/>
+    </sub-flow>
+    
+</mule>

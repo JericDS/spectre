@@ -1,0 +1,18 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "BridgeResponse"
+        }
+    },
+    "outputMessageMetadata": {
+        "flowVariables": {
+            "brand_id": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "string"
+            }
+        }
+    },
+    "id": "ed64bb3a-5a49-4e62-a013-1fe7c597a2e5",
+    "version": "5.2.0.0"
+}

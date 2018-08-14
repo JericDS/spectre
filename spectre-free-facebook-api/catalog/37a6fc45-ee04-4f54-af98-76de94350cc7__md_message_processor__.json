@@ -1,0 +1,17 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "NFResponse"
+        },
+        "flowVariables": {
+            "brand-id": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "integer"
+            }
+        }
+    },
+    "outputMessageMetadata": {},
+    "id": "37a6fc45-ee04-4f54-af98-76de94350cc7",
+    "version": "5.2.0.0"
+}

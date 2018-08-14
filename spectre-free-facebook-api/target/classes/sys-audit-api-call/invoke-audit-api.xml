@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <sub-flow name="spectre-free-facebook-api:\invoke-audit-api:subflow">
+        <logger message="#[flowVars.id]: Log Start Store Transaction to Audit API." level="INFO" doc:name="Log Start Store Transaction to Audit API"/>
+        <http:request config-ref="Audit_HTTP_Request_Configuration" path="${audit.config.path}" method="POST" doc:name="HTTP POST Audit Transaction REST API">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+                <http:header headerName="X-DreamFactory-Application-Name" value="audit"/>
+            </http:request-builder>
+        </http:request>
+        <set-variable variableName="audit-log-id" value="#[payload.Id]" doc:name="Set Audit Log ID"/>
+        <logger message="#[flowVars.id]: Log End Store Transaction to Audit API. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Store Transaction to Audit API"/>
+    </sub-flow>
+</mule>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    
+    <sub-flow name="spectre-free-facebook-api:\call-nf-api:flow">
+        <logger message="#[flowVars.id]: Log Start Call NF API" level="INFO" doc:name="Log Start Call NF API"/>
+        <http:request config-ref="NF_HTTP_Request_Configuration" path="${nf.config.path}#[flowVars.'sub-mobtel'.concat(&quot;/services?&quot;)]" method="GET" doc:name="HTTP GET NF Records of Prepaid">
+            <http:request-builder>
+                <http:query-param paramName="brand" value="#[flowVars.'brand-id']"/>
+                <http:query-param paramName="cutoffdateflag" value="1"/>
+                <http:header headerName="${nf.config.header.appkey}" value="${nf.config.header.appkey.value}"/>
+            </http:request-builder>
+        </http:request>
+        <logger message="#[flowVars.id]: Log End Call NF API. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Call NF API"/>
+    </sub-flow>
+</mule>

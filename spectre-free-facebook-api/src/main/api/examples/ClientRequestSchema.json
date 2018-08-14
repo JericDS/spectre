@@ -1,0 +1,72 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "csp_txid": {
+      "$id": "/properties/csp_txid",
+      "type": "string",
+      "title": "The Csp_txid Schema ",
+      "default": "",
+      "examples": [
+        "rt30927105072320150615112557855"
+      ]
+    },
+    "sms_message_string": {
+      "$id": "/properties/sms_message_string",
+      "type": "string",
+      "title": "The Sms_message_string Schema ",
+      "default": "",
+      "enum": ["free fb on", "free fb off", "on free fb", "off free fb", "bonusfb", "bonus fb"],
+      "examples": [
+        "free fb on"
+      ]
+    },
+    "sub_mobtel": {
+      "$id": "/properties/sub_mobtel",
+      "type": "string",
+      "title": "The Sub_mobtel Schema ",
+      "default": "",
+      "examples": [
+        "639271050723"
+      ]
+    },
+    "sms_source_address": {
+      "$id": "/properties/sms_source_address",
+      "type": "string",
+      "title": "The Sms_source_address Schema ",
+      "default": "",
+      "examples": [
+        "8888"
+      ]
+    },
+    "sub_device_details": {
+      "$id": "/properties/sub_device_details",
+      "type": "string",
+      "title": "The Sub_device_details Schema ",
+      "default": "",
+      "examples": [
+        "NOKIA2100"
+      ]
+    },
+    "hplmn": {
+      "$id": "/properties/hplmn",
+      "type": "string",
+      "title": "The Hplmn Schema ",
+      "default": "",
+      "examples": [
+        "639170000459"
+      ]
+    },
+    "as_service_id": {
+      "$id": "/properties/as_service_id",
+      "type": "string",
+      "title": "The As_service_id Schema ",
+      "default": "",
+      "examples": [
+        "2546"
+      ]
+    }
+  }
+}

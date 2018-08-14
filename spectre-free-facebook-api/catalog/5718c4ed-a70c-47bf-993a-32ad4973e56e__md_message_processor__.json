@@ -1,0 +1,22 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "BridgeResponse"
+        }
+    },
+    "outputMessageMetadata": {
+        "flowVariables": {
+            "is-prefix-in-bridge": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "boolean"
+            },
+            "brand-id": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "integer"
+            }
+        }
+    },
+    "id": "5718c4ed-a70c-47bf-993a-32ad4973e56e",
+    "version": "5.2.0.0"
+}

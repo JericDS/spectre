@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:context="http://www.springframework.org/schema/context" xmlns:redis="http://www.mulesoft.org/schema/mule/redis" xmlns:imap="http://www.mulesoft.org/schema/mule/imap" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/imap http://www.mulesoft.org/schema/mule/imap/current/mule-imap.xsd
+http://www.mulesoft.org/schema/mule/redis http://www.mulesoft.org/schema/mule/redis/current/mule-redis.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
+	<http:listener-config name="spectre-free-facebook-api-httpListenerConfig" host="${spectre.config.host}" port="${spectre.config.port}" doc:name="HTTP Listener Configuration"/>
+    <apikit:config name="spectre-free-facebook-api-config" raml="spectre-free-facebook-api.raml" consoleEnabled="false" doc:name="Router" keepRamlBaseUri="false"/>
+    <redis:config name="Redis__Configuration" host="${redis.config.host}" connectionTimeout="${redis.config.connection.timeout}" port="${redis.config.port}" doc:name="Redis: Configuration"/>
+    <context:property-placeholder location="config/*"/>
+    <http:request-config name="Audit_HTTP_Request_Configuration" host="${audit.config.host}" port="${audit.config.port}" doc:name="HTTP Request Configuration"/>
+	<http:request-config name="Redis_Connector_Configuration" host="127.0.0.1" port="6379" doc:name="HTTP Request Configuration"/>
+	<http:request-config name="DynamoDB_Gateway_HTTPS_Request_Configuration" protocol="HTTPS" host="${dynamodb.gateway.config.host}" port="${dynamodb.gateway.config.port}" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="Bridge_HTTP_Request_Configuration" host="${bridge.config.host}" port="${bridge.config.port}" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="NF_HTTP_Request_Configuration" host="${nf.config.host}" port="${nf.config.port}" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="Facebook_HTTP_Request_Configuration" host="${facebook.config.host}" port="${facebook.config.port}" doc:name="HTTP Request Configuration"/>
+    <spring:beans>
+    	<spring:bean name="invokeHMACGenerator" class="com.generator.HMACGenerator">
+    	</spring:bean>
+    </spring:beans>
+    
+</mule>

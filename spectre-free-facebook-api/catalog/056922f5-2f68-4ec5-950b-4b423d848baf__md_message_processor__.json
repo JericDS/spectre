@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "DynamoAPIGatewayResponse"
+        }
+    },
+    "outputMessageMetadata": {},
+    "id": "056922f5-2f68-4ec5-950b-4b423d848baf",
+    "version": "5.2.0.0"
+}

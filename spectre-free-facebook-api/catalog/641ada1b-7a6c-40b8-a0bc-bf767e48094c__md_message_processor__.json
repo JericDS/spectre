@@ -1,0 +1,25 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "ClientRequest"
+        },
+        "flowVariables": {
+            "sub-mobtel": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "sub-mobtel"
+            },
+            "sub-mobtel-prefix": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "sub-mobtel"
+            },
+            "sms-message-string": {
+                "connectorName": "#_custom_mule_metadata_type_#",
+                "typeId": "string"
+            }
+        }
+    },
+    "id": "641ada1b-7a6c-40b8-a0bc-bf767e48094c",
+    "version": "5.2.0.0"
+}

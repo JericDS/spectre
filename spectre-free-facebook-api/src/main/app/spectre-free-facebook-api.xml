@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:redis="http://www.mulesoft.org/schema/mule/redis" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/redis http://www.mulesoft.org/schema/mule/redis/current/mule-redis.xsd">
+    
+    <flow name="spectre-free-facebook-api-main">
+        <http:listener config-ref="spectre-free-facebook-api-httpListenerConfig" path="${spectre.config.path}" doc:name="HTTP Spectre Free Facebook REST API"/>
+        <set-variable variableName="id" value="#[message.id]" doc:name="Set ID FlowVars"/>
+        <apikit:router config-ref="spectre-free-facebook-api-config" doc:name="APIkit Router"/>
+        <exception-strategy ref="spectre-free-facebook-api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
+    </flow>
+    <flow name="spectre-free-facebook-api-console">
+        <http:listener config-ref="spectre-free-facebook-api-httpListenerConfig" path="/console/*" doc:name="HTTP Spectre Free Facebook REST API"/>
+        <apikit:console config-ref="spectre-free-facebook-api-config" doc:name="APIkit Console"/>
+    </flow>
+    
+    
+    
+    <flow name="post:/spectre:spectre-free-facebook-api-config">
+        <logger message="#[flowVars.id]: Log Start Free Facebook Provisioning" level="INFO" doc:name="Log Start Free Facebook Provisioning"/>
+        <flow-ref name="spectre-free-facebook-api:\impl-spectre-provisioning:subflow" doc:name="spectre-free-facebook-api:\impl-spectre-provisioning:subflow"/>
+        <logger message="#[flowVars.id]: Log End Free Facebook Provisioning Flow" level="INFO" doc:name="Log End Free Facebook Provisioning Flow"/>
+     
+<!--         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/> -->
+<!--         <set-payload value="{&#xA;&quot;message&quot; : &quot;Flight added (but not really)&quot;&#xA;}" doc:name="Set Payload"/> -->
+    </flow>
+    
+</mule>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    
+    <sub-flow name="spectre-free-facebook-api:\invoke-bridge-api:subflow">
+        <logger message="#[flowVars.id]: Log Start Invoke Bridge API" level="INFO" doc:name="Log Start Invoke Bridge API"/>
+        <http:request config-ref="Bridge_HTTP_Request_Configuration" path="${bridge.config.path}?" method="GET" doc:name="HTTP GET Brand ID REST API">
+            <http:request-builder>
+                <http:query-param paramName="filter" value="msisdn_prefix=#[flowVars.'sub-mobtel-prefix']"/>
+                <http:header headerName="X-DreamFactory-Application-Name" value="bridge"/>
+            </http:request-builder>
+        </http:request>
+        <logger message="#[flowVars.id]: Log End Invoke Bridge API. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Invoke Bridge API"/>
+    </sub-flow>
+</mule>

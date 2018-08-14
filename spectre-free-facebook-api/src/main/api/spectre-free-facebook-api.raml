@@ -1,0 +1,41 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/33b36916-bf9b-49fc-b7db-88fdeced1463 # 
+version: v1
+title: spectre-free-facebook-api
+
+traits: 
+  spectre-required:
+    headers: 
+      sms-message-string:
+        displayName: sms-message-string
+        description: Promo to avail. (String, Case sensitive)
+        type: string
+        required: true
+      sub-mobtel:
+        displayName: sub-mobtel
+        description: Subscriber mobile number. (10-12 Digits)
+        type: integer
+        required: true
+      as-service-id:
+        displayName: as-service-id
+        description: Service ID
+        type: string
+        required: true
+
+/spectre:
+#  is: [spectre-required]
+  post:
+    body: 
+      application/json:
+        example: !include examples/ClientRequest.json
+        schema: !include examples/ClientRequestSchema.json
+    responses: 
+      201:
+        body: 
+          application/json:
+            example:
+              message: Flight added (but not really)
+              
+  get:
+/test:
+  post:

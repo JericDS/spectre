@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
+    <sub-flow name="spectre-free-facebook-api:\check-eligibility:subflow">
+        <logger message="#[flowVars.id]: Log Start Check Eligibility" level="INFO" doc:name="Log Start Check Eligibility"/>
+        <flow-ref name="spectre-free-facebook-api:\get-old-state-in-cache:subflow" doc:name="spectre-free-facebook-api:\get-old-state-in-cache:subflow"/>
+        <choice doc:name="State in Cache Route" doc:description="Route 1: Check Eligibility via Old State
+Default: Call Hosts(NF/BSS/DynamoDB) API">
+            <when expression="#[payload != null]">
+<!--                 <flow-ref name="spectre-free-facebook-api:\check-eligibility-via-old-state-in-cache-flow:subflow" doc:name="spectre-free-facebook-api:\check-eligibility-via-old-state-in-cache-flow:subflow"/> -->
+                <dw:transform-message doc:name="Set result-code FlowVar">
+                    <dw:set-variable resource="classpath:scripts/Result-code.dwl" variableName="result-code"/>
+                </dw:transform-message>
+            </when>
+            <otherwise>
+                <flow-ref name="spectre-free-facebook-api:\check-eligibility-via-hosts(NF/BSS/DynamoDB):subflow" doc:name="spectre-free-facebook-api:\check-eligibility-via-hosts(NF/BSS/DynamoDB):subflow"/>
+            </otherwise>
+        </choice>
+        <dw:transform-message doc:name="Set promo-type FlowVar">
+            <dw:set-variable variableName="promo-type"><![CDATA[%dw 1.0
+%output application/java
+---
+(
+	"bonus_" when flowVars.sms-message-string contains "bonus"
+	otherwise "freefb_"
+)]]></dw:set-variable>
+        </dw:transform-message>
+        <set-payload value="#[flowVars.'result-code']
+#[flowVars.'promo-type']" doc:name="Set Payload"/>
+        <logger message="#[flowVars.id]: Log End Check Eligibility" level="INFO" doc:name="Log End Check Eligibility"/>
+    </sub-flow>
+    
+    <sub-flow name="spectre-free-facebook-api:\check-eligibility-via-hosts(NF/BSS/DynamoDB):subflow">
+        <logger message="Log Start Check Eligibility via Hosts(NF/BSS/DynamoDB)" level="INFO" doc:name="Log Start Check Eligibility via Hosts(NF/BSS/DynamoDB)"/>
+        <choice doc:name="Promo Route" doc:description="Route 1: Bonus(Invoke DynamoDB)
+Default: Call NF/BSS API">
+            <when expression="#[flowVars.'sms-message-string'.toLowerCase().contains(&quot;bonus&quot;)]">
+                <flow-ref name="spectre-free-facebook-api:\query-msisdn-in-dynamodb-api:subflow" doc:name="spectre-free-facebook-api:\query-msisdn-in-dynamodb-api:subflow"/>
+                <dw:transform-message doc:name="Set Result Code FlowVars">
+                    <dw:set-variable variableName="result-code"><![CDATA[%dw 1.0
+%output application/java
+---
+(
+	"first_on" when payload.Count as :number > 0 otherwise "invalid_keyword"
+)]]></dw:set-variable>
+                </dw:transform-message>
+            </when>
+            <otherwise>
+                <flow-ref name="spectre-free-facebook-api:\call-nf-api:flow" doc:name="spectre-free-facebook-api:\call-nf-api:flow"/>
+            </otherwise>
+        </choice>
+        <dw:transform-message doc:name="Set result-code FlowVars">
+            <dw:input-payload doc:sample="schema/NFResponse.json" mimeType="application/json"/>
+            <dw:input-variable doc:sample="sample_data/integer_3.dwl" mimeType="application/java" variableName="brand-id"/>
+            <dw:set-variable variableName="result-code"><![CDATA[%dw 1.0
+%output application/java
+---
+(
+	"not_registered" when (
+		(lower flowVars.sms-message-string) contains "off"
+	) otherwise ( 
+			("first_on" when payload.Count as :number > 0 
+			otherwise "invalid_keyword"
+		) when (lower flowVars.sms-message-string) contains "bonus"
+		otherwise (
+			(
+				("on" when flowVars.brand-id as :number == 3
+				otherwise ("on" when (payload.bundles[0].serviceId as :number) == 2536 otherwise "ineligible")
+				) when (sizeOf payload.bundles) > 0 otherwise "ineligible"
+			) 
+		)
+	)
+)]]></dw:set-variable>
+            <dw:set-variable variableName="sms-spiels-key"><![CDATA[%dw 1.0
+%output application/java
+---
+(
+	(
+		("first_on" when payload.Count as :number > 0 
+			otherwise "invalid_keyword"
+		) when flowVars.sms-message-string contains "bonus"
+		otherwise (
+			("on" when (sizeOf payload.bundles) > 0 otherwise "ineligible") when flowVars.brand-id as :number == 3
+			otherwise (
+				"ineligible" when payload.bundles[0] == null
+				otherwise ("on" when (payload.bundles[0].serviceId as :number) == 2536 otherwise "ineligible")
+			)
+		) 
+	) 
+	++ ( "_bonus" when flowVars.sms-message-string contains "bonus" otherwise "_freefb_" )
+	++ flowVars.brand-id
+)]]></dw:set-variable>
+        </dw:transform-message>
+        <logger message="Log End Check Eligibility via Hosts(NF/BSS/DynamoDB)" level="INFO" doc:name="Log End Check Eligibility via Hosts(NF/BSS/DynamoDB)"/>
+    </sub-flow>
+</mule>

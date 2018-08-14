@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    
+    <sub-flow name="spectre-free-facebook-api:\query-msisdn-in-dynamodb-api:subflow">
+        <logger message="#[flowVars.id]: Log Start Query MSISDN in DynamoDB" level="INFO" doc:name="Log Start Query MSISDN in DynamoDB"/>
+		<http:request config-ref="DynamoDB_Gateway_HTTPS_Request_Configuration" path="${dynamodb.gateway.config.path}#[flowVars.'sub-mobtel']" method="GET" doc:name="HTTPS GET MSISDN in DynamoDB">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+            </http:request-builder>
+        </http:request>
+        <logger message="#[flowVars.id]: Log End Query MSISDN in DynamoDB. #[message.payloadAs(java.lang.String)]" level="INFO" doc:name="Log End Query MSISDN in DynamoDB"/>
+    </sub-flow>
+</mule>
